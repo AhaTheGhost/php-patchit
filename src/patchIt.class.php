@@ -2,7 +2,7 @@
 /**
  * @author Ahmed F. Shark <ahmad360pro@gmail.com>
  * @version 1.0.3
- * @link https://github.com/AhaTheGhost
+ * @link https://github.com/AhaTheGhost/php-patchit/
  */
 
   class Patch {
@@ -12,14 +12,14 @@
     public $filename;
     public $byteArray;
 
-    public function patchFile($file, $array) {
+    public function patchFile($file, $array, $unpackType) {
 
       $this->filename = $file['name'];
 
       $handle = fopen($file['tmp_name'], "r+b") or die("Unable to read file!");
       $fsize = filesize($file['tmp_name']);
       $contents = fread($handle, $fsize);
-      $this->byteArray = unpack("H*", $contents);
+      $this->byteArray = unpack($unpackType, $contents); // Usually "H*"
       $this->byteArray = str_split(strtoupper($this->byteArray[1]), 2);
       fclose($handle);
 
