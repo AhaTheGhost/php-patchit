@@ -9,21 +9,18 @@
 
     private $FindBinary;
     private $ReplaceBinary;
-    private $filename;
-    private $byteArray;
-    private $unpackType;
+    private $ByteArray;
+    private $UnpackType;
 
     public function __construct($file, $unpackType) {
 
-      $this->unpackType = $unpackType;
-
-      $this->filename = $file['name'];
+      $this->UnpackType = $unpackType;
 
       $handle = fopen($file['tmp_name'], "r+b") or die("Unable to read file!");
       $fsize = filesize($file['tmp_name']);
       $contents = fread($handle, $fsize);
-      $this->byteArray = unpack($this->unpackType, $contents);
-      $this->byteArray = str_split(strtoupper($this->byteArray[1]), 2);
+      $this->ByteArray = unpack($this->UnpackType, $contents);
+      $this->ByteArray = str_split(strtoupper($this->ByteArray[1]), 2);
       fclose($handle);
 
     }
@@ -53,15 +50,15 @@
         $this->FindBinary = $array[$i];
         $this->ReplaceBinary = $array[$i + 1];
 
-        for ($buffIndex = 0; $buffIndex <= sizeof($this->byteArray) - 1; $buffIndex++){
+        for ($buffIndex = 0; $buffIndex <= sizeof($this->ByteArray) - 1; $buffIndex++){
 
-          if (!$this->isSequenceVaild($this->byteArray, $buffIndex))
+          if (!$this->isSequenceVaild($this->ByteArray, $buffIndex))
             continue;
 
           else {
 
             for ($R = 0; $R <= sizeof($this->FindBinary) - 1; $R++)
-              $this->byteArray[$buffIndex + $R] = $this->ReplaceBinary[$R];
+              $this->ByteArray[$buffIndex + $R] = $this->ReplaceBinary[$R];
 
             break;
 
@@ -90,8 +87,8 @@
 
       $data = '';
 
-      foreach ($this->byteArray as $i => $v)
-        $data .= pack($this->unpackType, $this->byteArray[$i]);
+      foreach ($this->ByteArray as $i => $v)
+        $data .= pack($this->UnpackType, $this->ByteArray[$i]);
 
       return $data;
 
