@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Ahmed F. Shark <ahmad360pro@gmail.com>
- * @version 1.0.3
+ * @version 1.0.4
  * @link https://github.com/AhaTheGhost/php-patchit/
  */
 
@@ -11,6 +11,8 @@
     public $ReplaceBinary;
     public $filename;
     public $byteArray;
+    public $unpackType;
+
 
     public function patchFile($file, $array, $unpackType) {
 
@@ -23,15 +25,17 @@
       $this->byteArray = str_split(strtoupper($this->byteArray[1]), 2);
       fclose($handle);
 
-      if(isArraySizeVaild($array))
-        patch();
+      $this->unpackType = $unpackType;
+
+      if($this->isArraySizeVaild($array))
+        $this->buffer($array);
 
     }
 
     private function isArraySizeVaild($array) {
 
       if(sizeof($array) % 2 != 0) {
-        echo 'The array must contain as many "find" sub arraies as "replace" sub arraies. Size of Find and Replace Hex Array: ' . sizeof($array);
+        echo 'The array must contain as many "find" sub arraies as "replace" sub arraies. Size of Find and Replace Jagged Array: ' . sizeof($array);
         return false;
       }
 
@@ -39,7 +43,7 @@
 
     }
 
-    private function patch() {
+    private function buffer($array) {
 
       for ($i = 0; $i < sizeof($array); $i += 2) {
 
@@ -84,7 +88,7 @@
       $data = '';
 
       foreach ($this->byteArray as $i => $v)
-        $data .= pack('H*', $this->byteArray[$i]);
+        $data .= pack($this->unpackType, $this->byteArray[$i]);
 
       return $data;
 
