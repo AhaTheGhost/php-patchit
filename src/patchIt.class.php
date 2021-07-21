@@ -7,25 +7,28 @@
 
   class Patch {
 
-    public $FindBinary;
-    public $ReplaceBinary;
-    public $filename;
-    public $byteArray;
-    public $unpackType;
+    private $FindBinary;
+    private $ReplaceBinary;
+    private $filename;
+    private $byteArray;
+    private $unpackType;
 
+    public function __construct($file, $unpackType) {
 
-    public function patchFile($file, $array, $unpackType) {
+      $this->unpackType = $unpackType;
 
       $this->filename = $file['name'];
 
       $handle = fopen($file['tmp_name'], "r+b") or die("Unable to read file!");
       $fsize = filesize($file['tmp_name']);
       $contents = fread($handle, $fsize);
-      $this->byteArray = unpack($unpackType, $contents); // Usually "H*"
+      $this->byteArray = unpack($this->unpackType, $contents);
       $this->byteArray = str_split(strtoupper($this->byteArray[1]), 2);
       fclose($handle);
 
-      $this->unpackType = $unpackType;
+    }
+
+    public function patchFile($array) {
 
       if($this->isArraySizeVaild($array))
         $this->buffer($array);
@@ -52,7 +55,7 @@
 
         for ($buffIndex = 0; $buffIndex <= sizeof($this->byteArray) - 1; $buffIndex++){
 
-          if (!$this->searchAndReplace($this->byteArray, $buffIndex))
+          if (!$this->isSequenceVaild($this->byteArray, $buffIndex))
             continue;
 
           else {
@@ -70,7 +73,7 @@
 
     }
 
-    private function searchAndReplace($seq, $pos) {
+    private function isSequenceVaild($seq, $pos) {
 
         if ($pos + sizeof($this->FindBinary) > sizeof($seq))
             return false;
