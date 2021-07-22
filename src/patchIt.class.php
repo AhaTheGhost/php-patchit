@@ -25,7 +25,7 @@
 
     }
 
-    public function patchFile($array) {
+    public function patchData($array) {
 
       if($this->isArraySizeVaild($array))
         $this->buffer($array);
